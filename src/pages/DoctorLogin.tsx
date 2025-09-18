@@ -125,6 +125,15 @@ const DoctorLogin = () => {
               </Button>
             </form>
           </CardContent>
+          
+          <div className="mt-6 text-center px-6 pb-6">
+            <p className="text-sm text-muted-foreground">
+              Don't have a doctor account?{" "}
+              <Link to="/register/doctor" className="text-primary hover:underline font-medium transition-colors">
+                Register here
+              </Link>
+            </p>
+          </div>
         </Card>
       </div>
     </div>
