@@ -183,8 +183,8 @@ const PatientDashboard = () => {
     },
     {
       icon: BookOpen,
-      title: "Book Appointment",
-      description: "Schedule appointments with doctors",
+      title: "Health Tips",
+      description: "Access health resources and wellness guides",
       action: () => setShowHealthTips(true),
       variant: "outline" as const,
       customClass: "btn-medical-secondary"
