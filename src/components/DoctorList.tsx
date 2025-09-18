@@ -45,7 +45,7 @@ const DoctorList = ({ onClose, symptoms: userSymptoms = "", category = "", onBac
 
   useEffect(() => {
     fetchDoctors();
-  }, []);
+  }, [userSymptoms, category]);
 
   const fetchDoctors = async () => {
     const { data, error } = await supabase
@@ -63,12 +63,78 @@ const DoctorList = ({ onClose, symptoms: userSymptoms = "", category = "", onBac
       });
     } else {
       setDoctors(data || []);
-      setFilteredDoctors((data || []).map(doctor => ({
+      filterDoctorsBySymptoms(data || []);
+    }
+  };
+
+  const filterDoctorsBySymptoms = (doctorsList: Doctor[]) => {
+    if (!userSymptoms || !category) {
+      setFilteredDoctors(doctorsList.map(doctor => ({
         ...doctor,
         matchScore: 1,
         matchReason: [`Available ${doctor.specialization} specialist`]
       })));
+      return;
     }
+
+    // Symptom to specialization mapping
+    const symptomSpecializationMap: { [key: string]: string[] } = {
+      'mental health': ['Psychiatry', 'Psychology'],
+      'anxiety': ['Psychiatry', 'Psychology'],
+      'depression': ['Psychiatry', 'Psychology'],
+      'heart': ['Cardiology', 'Internal Medicine'],
+      'chest pain': ['Cardiology', 'Emergency Medicine'],
+      'headache': ['Neurology', 'Internal Medicine'],
+      'skin': ['Dermatology'],
+      'fever': ['Internal Medicine', 'Family Medicine'],
+      'cough': ['Pulmonology', 'Internal Medicine'],
+      'stomach': ['Gastroenterology', 'Internal Medicine'],
+      'back pain': ['Orthopedics', 'Physical Medicine'],
+      'eye': ['Ophthalmology'],
+      'ear': ['ENT', 'Otolaryngology'],
+    };
+
+    const matchedDoctors = doctorsList.map(doctor => {
+      let matchScore = 0.5; // Base score
+      const matchReasons: string[] = [];
+
+      // Check category match
+      if (category && doctor.specialization.toLowerCase().includes(category.toLowerCase())) {
+        matchScore += 0.5;
+        matchReasons.push(`Specializes in ${category}`);
+      }
+
+      // Check symptom keywords
+      const symptomsLower = userSymptoms.toLowerCase();
+      for (const [symptom, specializations] of Object.entries(symptomSpecializationMap)) {
+        if (symptomsLower.includes(symptom)) {
+          if (specializations.some(spec => doctor.specialization.includes(spec))) {
+            matchScore += 0.3;
+            matchReasons.push(`Expert in ${symptom}-related conditions`);
+          }
+        }
+      }
+
+      // Experience bonus
+      if (doctor.experience_years > 5) {
+        matchScore += 0.1;
+        matchReasons.push(`${doctor.experience_years} years of experience`);
+      }
+
+      if (matchReasons.length === 0) {
+        matchReasons.push(`Available ${doctor.specialization} specialist`);
+      }
+
+      return {
+        ...doctor,
+        matchScore,
+        matchReason: matchReasons
+      };
+    });
+
+    // Sort by match score (highest first)
+    matchedDoctors.sort((a, b) => b.matchScore - a.matchScore);
+    setFilteredDoctors(matchedDoctors);
   };
 
   const handleSendRequest = async () => {
@@ -84,14 +150,39 @@ const DoctorList = ({ onClose, symptoms: userSymptoms = "", category = "", onBac
     setLoading(true);
 
     try {
-      const { data: patientData, error: patientError } = await supabase
+      // First, ensure patient record exists
+      let patientData;
+      const { data: existingPatient, error: patientSelectError } = await supabase
         .from('patients')
         .select('id')
         .eq('user_id', user.id)
         .single();
 
-      if (patientError) {
-        throw new Error('Patient profile not found');
+      if (patientSelectError) {
+        // Create patient record if it doesn't exist
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('full_name, email, phone')
+          .eq('user_id', user.id)
+          .single();
+
+        const { data: newPatient, error: createError } = await supabase
+          .from('patients')
+          .insert({
+            user_id: user.id,
+            full_name: profileData?.full_name || 'Unknown Patient',
+            email: profileData?.email || user.email || '',
+            phone: profileData?.phone
+          })
+          .select('id')
+          .single();
+
+        if (createError) {
+          throw new Error('Failed to create patient record');
+        }
+        patientData = newPatient;
+      } else {
+        patientData = existingPatient;
       }
 
       const { error: requestError } = await supabase
@@ -148,6 +239,19 @@ const DoctorList = ({ onClose, symptoms: userSymptoms = "", category = "", onBac
                     <Clock className="h-4 w-4" />
                     <span>{doctor.experience_years} years experience</span>
                   </div>
+                  <div className="flex items-center gap-2 text-sm text-green-600">
+                    <Star className="h-4 w-4" />
+                    <span>Match Score: {Math.round(doctor.matchScore * 100)}%</span>
+                  </div>
+                  {doctor.matchReason.length > 0 && (
+                    <div className="text-xs text-muted-foreground">
+                      {doctor.matchReason.slice(0, 2).map((reason, idx) => (
+                        <Badge key={idx} variant="outline" className="mr-1 mb-1 text-xs">
+                          {reason}
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
                   <p className="text-sm text-muted-foreground line-clamp-2">{doctor.bio}</p>
                   <Button
                     onClick={() => {

@@ -28,7 +28,10 @@ const Header = () => {
             <span className="text-xl font-bold text-foreground">TeleMed</span>
           </Link>
 
-          {/* Desktop Navigation */}
+          {/* Empty space to center logo */}
+          <div className="flex-1"></div>
+
+          {/* Desktop Navigation - moved to top-right */}
           <nav className="hidden md:flex space-x-8">
             {navigation.map((item) => (
               <Link
@@ -44,9 +47,6 @@ const Header = () => {
               </Link>
             ))}
           </nav>
-
-          {/* Empty space for removed auth buttons */}
-          <div className="hidden md:flex"></div>
 
           {/* Mobile menu button */}
           <div className="md:hidden">

@@ -230,6 +230,7 @@ const DoctorDashboard = () => {
       title: "Signed Out",
       description: "You have been signed out successfully.",
     });
+    window.location.href = '/';
   };
 
   const dashboardStats = [

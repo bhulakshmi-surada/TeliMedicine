@@ -24,6 +24,7 @@ import DoctorList from "@/components/DoctorList";
 import PrescriptionList from "@/components/PrescriptionList";
 import SymptomsForm from "@/components/SymptomsForm";
 import PatientBookingView from "@/components/PatientBookingView";
+import HealthTips from "@/components/HealthTips";
 
 interface PatientProfile {
   full_name: string;
@@ -52,7 +53,7 @@ const PatientDashboard = () => {
   const [userSymptoms, setUserSymptoms] = useState("");
   const [symptomCategory, setSymptomCategory] = useState("");
   const [activeView, setActiveView] = useState('dashboard');
-  const [showBookingView, setShowBookingView] = useState(false);
+  const [showHealthTips, setShowHealthTips] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -132,6 +133,7 @@ const PatientDashboard = () => {
       title: "Signed Out",
       description: "You have been signed out successfully.",
     });
+    window.location.href = '/';
   };
 
   const handleSymptomsSubmit = (symptoms: string, category: string) => {
@@ -176,17 +178,10 @@ const PatientDashboard = () => {
       variant: "secondary" as const
     },
     {
-      icon: Calendar,
-      title: "Book Appointment",
-      description: "Schedule appointments with doctors",
-      action: () => setShowBookingView(true),
-      variant: "outline" as const
-    },
-    {
       icon: BookOpen,
       title: "Health Tips",
-      description: "Read personalized health advice",
-      action: () => {},
+      description: "Get personalized health advice based on your symptoms",
+      action: () => setShowHealthTips(true),
       variant: "outline" as const
     }
   ];
@@ -200,6 +195,35 @@ const PatientDashboard = () => {
       default: return 'secondary';
     }
   };
+
+  if (showHealthTips) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background to-muted/50 py-8">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-3">
+              <Button
+                variant="outline"
+                onClick={() => setShowHealthTips(false)}
+              >
+                ← Back to Dashboard
+              </Button>
+              <h1 className="text-3xl font-bold text-foreground">Health Tips</h1>
+            </div>
+            <Button variant="outline" onClick={handleSignOut}>
+              <LogOut className="h-4 w-4 mr-2" />
+              Sign Out
+            </Button>
+          </div>
+          <Card className="shadow-medium">
+            <CardContent className="p-6">
+              <HealthTips symptoms={userSymptoms} category={symptomCategory} />
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   if (showPrescriptions) {
     return (
@@ -226,15 +250,6 @@ const PatientDashboard = () => {
     );
   }
 
-  if (showBookingView) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-background to-muted/50 py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <PatientBookingView onClose={() => setShowBookingView(false)} />
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-muted/50 py-8">

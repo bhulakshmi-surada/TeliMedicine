@@ -6,9 +6,24 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MessageSquare, Star, Heart, AlertCircle } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
 const Feedback = () => {
+  const { user } = useAuth();
   const [rating, setRating] = useState(0);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    userType: '',
+    category: '',
+    title: '',
+    feedback: '',
+    improvements: '',
+    recommendation: ''
+  });
+  const [loading, setLoading] = useState(false);
 
   const feedbackCategories = [
     { value: "general", label: "General Feedback" },
@@ -19,8 +34,76 @@ const Feedback = () => {
     { value: "suggestion", label: "Feature Suggestion" }
   ];
 
-  const handleStarClick = (starRating: number) => {
-    setRating(starRating);
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleSubmitFeedback = async () => {
+    if (!rating || !formData.category || !formData.feedback) {
+      toast({
+        title: "Missing Information",
+        description: "Please provide a rating, category, and feedback message.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please log in to submit feedback.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLoading(true);
+    
+    try {
+      const { error } = await supabase
+        .from('feedback')
+        .insert({
+          user_id: user.id,
+          user_type: formData.userType || 'patient',
+          rating,
+          feedback_text: `${formData.title ? formData.title + '\n\n' : ''}${formData.feedback}${formData.improvements ? '\n\nImprovements: ' + formData.improvements : ''}${formData.recommendation ? '\n\nRecommendation: ' + formData.recommendation : ''}`,
+          category: formData.category
+        });
+
+      if (error) {
+        throw new Error('Failed to submit feedback');
+      }
+
+      toast({
+        title: "Feedback Submitted",
+        description: "Thank you for your feedback! We appreciate your input.",
+      });
+
+      // Reset form
+      setRating(0);
+      setFormData({
+        name: '',
+        email: '',
+        userType: '',
+        category: '',
+        title: '',
+        feedback: '',
+        improvements: '',
+        recommendation: ''
+      });
+
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to submit feedback. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -52,32 +135,42 @@ const Feedback = () => {
             <div className="grid md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <Label htmlFor="name">Full Name</Label>
-                <Input id="name" placeholder="Your full name" />
+                <Input 
+                  id="name" 
+                  placeholder="Your full name" 
+                  value={formData.name}
+                  onChange={(e) => handleInputChange('name', e.target.value)}
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="email">Email Address</Label>
-                <Input id="email" type="email" placeholder="your.email@example.com" />
+                <Input 
+                  id="email" 
+                  type="email" 
+                  placeholder="your.email@example.com" 
+                  value={formData.email}
+                  onChange={(e) => handleInputChange('email', e.target.value)}
+                />
               </div>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="userType">You are a...</Label>
-              <Select>
+              <Select value={formData.userType} onValueChange={(value) => handleInputChange('userType', value)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select your role" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="patient">Patient</SelectItem>
                   <SelectItem value="doctor">Doctor</SelectItem>
-                  <SelectItem value="family">Family Member/Caregiver</SelectItem>
-                  <SelectItem value="other">Other</SelectItem>
+                  <SelectItem value="support">Support Staff</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="category">Feedback Category</Label>
-              <Select>
+              <Select value={formData.category} onValueChange={(value) => handleInputChange('category', value)}>
                 <SelectTrigger>
                   <SelectValue placeholder="What is this feedback about?" />
                 </SelectTrigger>
@@ -98,7 +191,7 @@ const Feedback = () => {
                   <button
                     key={star}
                     type="button"
-                    onClick={() => handleStarClick(star)}
+                    onClick={() => setRating(star)}
                     className="focus:outline-none"
                   >
                     <Star
@@ -122,7 +215,9 @@ const Feedback = () => {
               <Label htmlFor="title">Feedback Title</Label>
               <Input 
                 id="title" 
-                placeholder="Brief summary of your feedback" 
+                placeholder="Brief summary of your feedback"
+                value={formData.title}
+                onChange={(e) => handleInputChange('title', e.target.value)}
               />
             </div>
 
@@ -132,6 +227,8 @@ const Feedback = () => {
                 id="feedback"
                 placeholder="Please share your detailed feedback, suggestions, or concerns..."
                 className="min-h-[150px]"
+                value={formData.feedback}
+                onChange={(e) => handleInputChange('feedback', e.target.value)}
               />
             </div>
 
@@ -141,12 +238,14 @@ const Feedback = () => {
                 id="improvements"
                 placeholder="Any specific suggestions for how we can make TeleMed better?"
                 className="min-h-[100px]"
+                value={formData.improvements}
+                onChange={(e) => handleInputChange('improvements', e.target.value)}
               />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="recommendation">Would you recommend TeleMed to others?</Label>
-              <Select>
+              <Select value={formData.recommendation} onValueChange={(value) => handleInputChange('recommendation', value)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select your likelihood to recommend" />
                 </SelectTrigger>
@@ -176,11 +275,12 @@ const Feedback = () => {
             </Card>
 
             <div className="flex space-x-4">
-              <Button className="flex-1">
-                Submit Feedback
-              </Button>
-              <Button variant="outline" className="flex-1">
-                Save as Draft
+              <Button 
+                className="flex-1" 
+                onClick={handleSubmitFeedback}
+                disabled={loading || !rating || !formData.category || !formData.feedback}
+              >
+                {loading ? "Submitting..." : "Submit Feedback"}
               </Button>
             </div>
           </CardContent>

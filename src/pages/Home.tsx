@@ -119,7 +119,7 @@ const Home = () => {
               <Button variant="secondary" size="lg" asChild>
                 <Link to="/login/patient">Get Started as Patient</Link>
               </Button>
-              <Button variant="outline" size="lg" asChild>
+              <Button variant="default" size="lg" className="bg-primary hover:bg-primary/90" asChild>
                 <Link to="/login/doctor">Join as Doctor</Link>
               </Button>
             </div>

@@ -203,6 +203,39 @@ export type Database = {
         }
         Relationships: []
       }
+      feedback: {
+        Row: {
+          category: string
+          created_at: string
+          feedback_text: string | null
+          id: string
+          rating: number
+          updated_at: string
+          user_id: string | null
+          user_type: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          feedback_text?: string | null
+          id?: string
+          rating: number
+          updated_at?: string
+          user_id?: string | null
+          user_type: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          feedback_text?: string | null
+          id?: string
+          rating?: number
+          updated_at?: string
+          user_id?: string | null
+          user_type?: string
+        }
+        Relationships: []
+      }
       patients: {
         Row: {
           created_at: string
