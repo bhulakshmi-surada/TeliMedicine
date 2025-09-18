@@ -5,6 +5,7 @@ import { FileText, Calendar, Heart, AlertCircle } from "lucide-react";
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
+import DoctorAvailableSlots from './DoctorAvailableSlots';
 
 interface Prescription {
   id: string;
@@ -14,6 +15,7 @@ interface Prescription {
   follow_up_date: string;
   notes: string;
   created_at: string;
+  doctor_id: string;
   doctor: {
     full_name: string;
     specialization: string;
@@ -118,6 +120,23 @@ const PrescriptionList = () => {
                 </h4>
                 <div className="bg-green-50 dark:bg-green-950/20 p-3 rounded-lg">
                   <p className="text-sm text-green-800 dark:text-green-200">{prescription.health_tips}</p>
+                </div>
+              </div>
+            )}
+
+            {/* Doctor's Available Consultation Slots */}
+            <DoctorAvailableSlots doctorId={prescription.doctor_id} />
+
+            {prescription.follow_up_date && (
+              <div>
+                <h4 className="font-semibold text-sm mb-2 flex items-center gap-2">
+                  <Calendar className="h-4 w-4 text-blue-600" />
+                  Follow-up Date
+                </h4>
+                <div className="bg-blue-50 dark:bg-blue-950/20 p-3 rounded-lg">
+                  <p className="text-sm text-blue-800 dark:text-blue-200">
+                    {new Date(prescription.follow_up_date).toLocaleDateString()}
+                  </p>
                 </div>
               </div>
             )}
