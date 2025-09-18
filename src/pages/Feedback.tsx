@@ -5,13 +5,16 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MessageSquare, Star, Heart, AlertCircle, ThumbsUp } from "lucide-react";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 const Feedback = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const [rating, setRating] = useState(0);
   const [formData, setFormData] = useState({
     name: '',
@@ -42,7 +45,31 @@ const Feedback = () => {
     }));
   };
 
-  const handleSubmitFeedback = async () => {
+  const createLoveAnimation = (e: React.MouseEvent) => {
+    const button = e.currentTarget;
+    const rect = button.getBoundingClientRect();
+    const loveSymbols = ['💖', '💕', '💗', '💝', '💘'];
+    
+    // Create multiple love symbols
+    for (let i = 0; i < 5; i++) {
+      const love = document.createElement('div');
+      love.innerHTML = loveSymbols[Math.floor(Math.random() * loveSymbols.length)];
+      love.className = 'love-animation';
+      love.style.left = `${rect.left + Math.random() * rect.width}px`;
+      love.style.top = `${rect.top}px`;
+      document.body.appendChild(love);
+      
+      // Remove element after animation
+      setTimeout(() => {
+        document.body.removeChild(love);
+      }, 2000);
+    }
+  };
+
+  const handleSubmitFeedback = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    // Create love animation first
+    createLoveAnimation(e);
+    
     if (!rating || !formData.category || !formData.feedback) {
       toast({
         title: "Missing Information",
@@ -94,10 +121,10 @@ const Feedback = () => {
         recommendation: ''
       });
       
-      // Hide success message after 3 seconds
+      // Redirect to home after 2 seconds
       setTimeout(() => {
-        setSubmitted(false);
-      }, 3000);
+        navigate('/');
+      }, 2000);
 
     } catch (error: any) {
       toast({
@@ -115,14 +142,14 @@ const Feedback = () => {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Success Message */}
         {submitted && (
-          <Card className="mb-8 shadow-elegant bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 border-green-200 dark:border-green-800">
-            <CardContent className="p-6 text-center">
-              <div className="mx-auto bg-gradient-to-br from-green-500 to-emerald-600 p-4 rounded-full w-fit mb-4 shadow-glow">
-                <ThumbsUp className="h-8 w-8 text-white" />
+          <Card className="mb-8 shadow-elegant bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 border-success/20">
+            <CardContent className="p-8 text-center">
+              <div className="text-6xl mb-4 animate-bounce">
+                👍
               </div>
-              <h3 className="text-2xl font-bold text-green-800 dark:text-green-200 mb-2">Feedback Sent Successfully!</h3>
-              <p className="text-green-700 dark:text-green-300">
-                Thank you for your valuable feedback. We appreciate your input and will use it to improve our services.
+              <h3 className="text-3xl font-bold text-success mb-2">Submitted!</h3>
+              <p className="text-success/80 text-lg">
+                Redirecting to home page...
               </p>
             </CardContent>
           </Card>
@@ -295,11 +322,12 @@ const Feedback = () => {
 
             <div className="flex space-x-4">
               <Button 
-                className="flex-1 btn-medical-primary hover:shadow-glow transition-spring" 
+                ref={buttonRef}
+                className="flex-1 btn-medical-secondary hover:shadow-glow transition-spring relative overflow-hidden" 
                 onClick={handleSubmitFeedback}
-                disabled={loading || !rating || !formData.category || !formData.feedback}
+                disabled={loading || !rating || !formData.category || !formData.feedback || submitted}
               >
-                {loading ? "Submitting..." : "Submit Feedback"}
+                {loading ? "Submitting..." : submitted ? "✨ Submitted!" : "💖 Submit Feedback"}
               </Button>
             </div>
           </CardContent>

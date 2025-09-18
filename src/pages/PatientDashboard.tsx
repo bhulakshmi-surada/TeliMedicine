@@ -162,28 +162,32 @@ const PatientDashboard = () => {
       title: "Consult Doctor",
       description: "Browse available doctors and send consultation requests",
       action: () => setShowSymptomsForm(true),
-      variant: "default" as const
+      variant: "default" as const,
+      customClass: "btn-medical-primary"
     },
     {
       icon: AlertCircle,
       title: "SOS Emergency Call",
       description: "Connect to your emergency contact",
       action: handleEmergencyCall,
-      variant: "destructive" as const
+      variant: "destructive" as const,
+      customClass: "btn-emergency"
     },
     {
       icon: FileText,
       title: "View Prescriptions",
       description: "Access your digital prescriptions and health tips",
       action: () => setShowPrescriptions(true),
-      variant: "secondary" as const
+      variant: "secondary" as const,
+      customClass: "btn-medical-secondary"
     },
     {
       icon: BookOpen,
-      title: "Health Tips",
-      description: "Get personalized health advice based on your symptoms",
+      title: "Book Appointment",
+      description: "Schedule appointments with doctors",
       action: () => setShowHealthTips(true),
-      variant: "outline" as const
+      variant: "outline" as const,
+      customClass: "btn-medical-secondary"
     }
   ];
 
@@ -281,7 +285,11 @@ const PatientDashboard = () => {
           {quickActions.map((action, index) => (
             <Card key={index} className="shadow-medium hover:shadow-strong transition-all duration-300 cursor-pointer">
               <CardHeader className="text-center">
-                <div className="mx-auto bg-gradient-secondary p-3 rounded-full w-fit mb-3">
+                <div className={`mx-auto p-3 rounded-full w-fit mb-3 ${
+                  index === 0 ? 'bg-medical-primary' : 
+                  index === 1 ? 'bg-emergency' : 
+                  'bg-medical-secondary'
+                }`}>
                   <action.icon className="h-6 w-6 text-white" />
                 </div>
                 <CardTitle className="text-lg">{action.title}</CardTitle>
@@ -290,7 +298,11 @@ const PatientDashboard = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent className="pt-0">
-                <Button variant={action.variant} className="w-full" onClick={action.action}>
+                <Button 
+                  variant={action.variant} 
+                  className={`w-full ${action.customClass}`} 
+                  onClick={action.action}
+                >
                   {action.title}
                 </Button>
               </CardContent>

@@ -277,28 +277,32 @@ const DoctorDashboard = () => {
       title: "View Pending Requests",
       description: "Review and respond to patient requests",
       variant: "default" as const,
-      action: () => setShowPendingRequests(true)
+      action: () => setShowPendingRequests(true),
+      customClass: "btn-medical-primary"
     },
     {
       icon: Calendar,
       title: "Manage Schedule",
       description: "Set availability and time slots",
       variant: "secondary" as const,
-      action: () => setShowScheduleManager(true)
+      action: () => setShowScheduleManager(true),
+      customClass: "btn-medical-secondary"
     },
     {
       icon: Video,
       title: "Start Video Call",
-      description: "Manage video consultation bookings",
+      description: "Begin consultation with patient",
       variant: "outline" as const,
-      action: () => setShowVideoBookings(true)
+      action: () => setShowVideoBookings(true),
+      customClass: "btn-medical-primary"
     },
     {
       icon: MessageCircle,
-      title: "Start a Chat",
-      description: "Manage chat consultation bookings",
+      title: "Consultation Settings",
+      description: "Configure your practice preferences",
       variant: "outline" as const,
-      action: () => setShowChatBookings(true)
+      action: () => setShowChatBookings(true),
+      customClass: "btn-medical-secondary"
     }
   ];
 
@@ -427,10 +431,10 @@ const DoctorDashboard = () => {
             <Card key={index} className="bg-white border-0 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer" onClick={action.action}>
               <CardContent className="p-6 text-center">
                 <div className={`mx-auto p-3 rounded-full w-fit mb-4 ${
-                  index === 0 ? 'bg-blue-600' : 
-                  index === 1 ? 'bg-green-600' : 
-                  index === 2 ? 'bg-blue-600' : 
-                  'bg-green-600'
+                  index === 0 ? 'bg-medical-primary' : 
+                  index === 1 ? 'bg-medical-secondary' : 
+                  index === 2 ? 'bg-medical-primary' : 
+                  'bg-medical-secondary'
                 }`}>
                   <action.icon className="h-6 w-6 text-white" />
                 </div>
@@ -439,13 +443,9 @@ const DoctorDashboard = () => {
                   {action.description}
                 </CardDescription>
                 <Button 
-                  variant={index === 0 ? "default" : index === 1 ? "secondary" : "outline"} 
+                  variant={action.variant} 
                   size="sm" 
-                  className={`w-full ${
-                    index === 0 ? 'bg-blue-600 hover:bg-blue-700' : 
-                    index === 1 ? 'bg-green-600 hover:bg-green-700 text-white' : 
-                    ''
-                  }`}
+                  className={`w-full ${action.customClass}`}
                 >
                   {action.title}
                 </Button>

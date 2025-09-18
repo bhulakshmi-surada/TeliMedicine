@@ -56,6 +56,9 @@ export default {
           primary: "hsl(var(--trust-primary))",
           secondary: "hsl(var(--trust-secondary))",
         },
+        emergency: "hsl(var(--emergency))",
+        success: "hsl(var(--success))",
+        info: "hsl(var(--info))",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",

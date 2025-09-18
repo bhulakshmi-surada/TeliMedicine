@@ -27,16 +27,17 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 200 98% 39%;
 
-    /* Enhanced Medical theme colors */
-    --medical-primary: 200 98% 39%;
-    --medical-secondary: 160 60% 45%;
+    /* Enhanced Medical theme colors matching reference */
+    --medical-primary: 195 100% 39%; /* Blue/teal for primary actions */
+    --medical-secondary: 160 84% 39%; /* Green for secondary actions */
     --medical-accent: 35 100% 50%;
-    --trust-primary: 220 100% 30%;
-    --trust-secondary: 240 95% 35%;
+    --trust-primary: 195 100% 45%; /* Lighter blue/teal */
+    --trust-secondary: 160 84% 45%; /* Lighter green */
     --soft-gray: 210 15% 95%;
-    --success: 142 76% 36%;
+    --success: 160 84% 39%; /* Green matching secondary */
     --warning: 38 92% 50%;
-    --info: 200 98% 39%;
+    --info: 195 100% 39%; /* Blue/teal matching primary */
+    --emergency: 0 84% 60%; /* Red for emergency actions */
 
     /* Advanced shadow system */
     --shadow-elegant: 0 10px 30px -10px hsl(var(--primary) / 0.3);
@@ -90,14 +91,15 @@
     --ring: 200 98% 39%;
 
     /* Dark mode medical colors */
-    --medical-primary: 200 98% 50%;
-    --medical-secondary: 160 60% 55%;
-    --trust-primary: 220 100% 40%;
-    --trust-secondary: 240 95% 45%;
+    --medical-primary: 195 100% 50%;
+    --medical-secondary: 160 84% 50%;
+    --trust-primary: 195 100% 55%;
+    --trust-secondary: 160 84% 55%;
     --soft-gray: 240 5% 15%;
-    --success: 142 76% 46%;
+    --success: 160 84% 50%;
     --warning: 38 92% 60%;
-    --info: 200 98% 50%;
+    --info: 195 100% 50%;
+    --emergency: 0 84% 70%;
 
     /* Dark mode glass effects */
     --glass-bg: rgba(0, 0, 0, 0.2);
@@ -274,6 +276,60 @@
 .btn-medical-primary:hover {
   transform: translateY(-1px);
   box-shadow: var(--shadow-medium);
+}
+
+.btn-medical-secondary {
+  background: linear-gradient(135deg, 
+    hsl(var(--medical-secondary)) 0%, 
+    hsl(var(--trust-secondary)) 100%);
+  color: white;
+  border: none;
+  box-shadow: var(--shadow-soft);
+  transition: var(--transition-spring);
+}
+
+.btn-medical-secondary:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-medium);
+}
+
+.btn-emergency {
+  background: linear-gradient(135deg, 
+    hsl(var(--emergency)) 0%, 
+    hsl(var(--emergency) / 0.8) 100%);
+  color: white;
+  border: none;
+  box-shadow: var(--shadow-soft);
+  transition: var(--transition-spring);
+}
+
+.btn-emergency:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-medium);
+}
+
+/* Love symbol animation */
+@keyframes love-float {
+  0% {
+    transform: translateY(0) scale(0);
+    opacity: 0;
+  }
+  20% {
+    transform: translateY(-10px) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100px) scale(0.5);
+    opacity: 0;
+  }
+}
+
+.love-animation {
+  animation: love-float 2s ease-out forwards;
+  position: absolute;
+  pointer-events: none;
+  font-size: 1.5rem;
+  z-index: 1000;
 }
 
 /* Loading animations */
