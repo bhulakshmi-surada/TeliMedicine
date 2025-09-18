@@ -73,7 +73,7 @@ const DoctorLogin = () => {
         </Link>
         <Card className="shadow-strong">
           <CardHeader className="text-center">
-            <div className="mx-auto bg-gradient-secondary p-3 rounded-full w-fit mb-4">
+            <div className="mx-auto bg-gradient-primary p-3 rounded-full w-fit mb-4">
               <Stethoscope className="h-8 w-8 text-white" />
             </div>
             <CardTitle className="text-2xl">Doctor Login</CardTitle>

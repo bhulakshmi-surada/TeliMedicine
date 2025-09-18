@@ -282,8 +282,8 @@ const DoctorDashboard = () => {
     },
     {
       icon: Calendar,
-      title: "Manage Schedule",
-      description: "Set availability and time slots",
+      title: "Health Tips",
+      description: "View health resources",
       variant: "secondary" as const,
       action: () => setShowScheduleManager(true),
       customClass: "btn-medical-secondary"
@@ -298,8 +298,8 @@ const DoctorDashboard = () => {
     },
     {
       icon: MessageCircle,
-      title: "Consultation Settings",
-      description: "Configure your practice preferences",
+      title: "Start Chat",
+      description: "Begin conversation",
       variant: "outline" as const,
       action: () => setShowChatBookings(true),
       customClass: "btn-medical-secondary"
