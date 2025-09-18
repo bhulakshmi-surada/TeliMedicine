@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MessageSquare, Star, Heart, AlertCircle } from "lucide-react";
+import { MessageSquare, Star, Heart, AlertCircle, ThumbsUp } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -24,6 +24,7 @@ const Feedback = () => {
     recommendation: ''
   });
   const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   const feedbackCategories = [
     { value: "general", label: "General Feedback" },
@@ -77,11 +78,9 @@ const Feedback = () => {
         throw new Error('Failed to submit feedback');
       }
 
-      toast({
-        title: "Feedback Submitted",
-        description: "Thank you for your feedback! We appreciate your input.",
-      });
-
+      // Show success message
+      setSubmitted(true);
+      
       // Reset form
       setRating(0);
       setFormData({
@@ -94,6 +93,11 @@ const Feedback = () => {
         improvements: '',
         recommendation: ''
       });
+      
+      // Hide success message after 3 seconds
+      setTimeout(() => {
+        setSubmitted(false);
+      }, 3000);
 
     } catch (error: any) {
       toast({
@@ -109,9 +113,24 @@ const Feedback = () => {
   return (
     <div className="min-h-screen py-12">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Success Message */}
+        {submitted && (
+          <Card className="mb-8 shadow-elegant bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 border-green-200 dark:border-green-800">
+            <CardContent className="p-6 text-center">
+              <div className="mx-auto bg-gradient-to-br from-green-500 to-emerald-600 p-4 rounded-full w-fit mb-4 shadow-glow">
+                <ThumbsUp className="h-8 w-8 text-white" />
+              </div>
+              <h3 className="text-2xl font-bold text-green-800 dark:text-green-200 mb-2">Feedback Sent Successfully!</h3>
+              <p className="text-green-700 dark:text-green-300">
+                Thank you for your valuable feedback. We appreciate your input and will use it to improve our services.
+              </p>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Hero Section */}
         <div className="text-center mb-12">
-          <div className="mx-auto bg-gradient-primary p-4 rounded-full w-fit mb-6">
+          <div className="mx-auto bg-gradient-medical p-4 rounded-full w-fit mb-6 shadow-glow">
             <MessageSquare className="h-8 w-8 text-white" />
           </div>
           <h1 className="text-4xl font-bold text-foreground mb-4">Share Your Feedback</h1>
@@ -121,10 +140,10 @@ const Feedback = () => {
         </div>
 
         {/* Feedback Form */}
-        <Card className="shadow-medium">
+        <Card className="card-enhanced shadow-elegant">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
-              <Heart className="h-5 w-5 text-primary" />
+              <Heart className="h-5 w-5 text-accent" />
               <span>Tell Us About Your Experience</span>
             </CardTitle>
             <CardDescription>
@@ -195,10 +214,10 @@ const Feedback = () => {
                     className="focus:outline-none"
                   >
                     <Star
-                      className={`h-8 w-8 transition-colors ${
+                      className={`h-8 w-8 transition-all duration-300 hover-scale ${
                         star <= rating
-                          ? "text-yellow-400 fill-yellow-400"
-                          : "text-gray-300 hover:text-yellow-300"
+                          ? "text-amber-400 fill-amber-400 glow-primary"
+                          : "text-muted-foreground hover:text-amber-300"
                       }`}
                     />
                   </button>
@@ -259,10 +278,10 @@ const Feedback = () => {
               </Select>
             </div>
 
-            <Card className="bg-muted/30 border-primary/20">
+            <Card className="glass-effect border-primary/20">
               <CardContent className="p-4">
                 <div className="flex items-start space-x-3">
-                  <AlertCircle className="h-5 w-5 text-primary mt-0.5" />
+                  <AlertCircle className="h-5 w-5 text-info mt-0.5" />
                   <div className="text-sm">
                     <p className="font-medium text-foreground mb-1">Privacy Notice</p>
                     <p className="text-muted-foreground">
@@ -276,7 +295,7 @@ const Feedback = () => {
 
             <div className="flex space-x-4">
               <Button 
-                className="flex-1" 
+                className="flex-1 btn-medical-primary hover:shadow-glow transition-spring" 
                 onClick={handleSubmitFeedback}
                 disabled={loading || !rating || !formData.category || !formData.feedback}
               >

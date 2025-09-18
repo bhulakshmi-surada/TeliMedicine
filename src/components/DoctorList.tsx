@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { User, Clock, Star, Send, Video, MessageCircle, ArrowLeft, Filter } from "lucide-react";
+import { User, Clock, Star, Send, Video, MessageCircle, ArrowLeft, Filter, Award, BookOpen } from "lucide-react";
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
@@ -224,42 +224,49 @@ const DoctorList = ({ onClose, symptoms: userSymptoms = "", category = "", onBac
         <div className="max-h-[60vh] overflow-y-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {filteredDoctors.map((doctor) => (
-              <Card key={doctor.id} className="shadow-medium hover:shadow-strong transition-all duration-300">
+              <Card key={doctor.id} className="card-enhanced hover:shadow-glow transition-spring hover-scale">
                 <CardHeader className="text-center pb-4">
-                  <div className="mx-auto bg-gradient-primary p-3 rounded-full w-fit mb-3">
+                  <div className="mx-auto bg-gradient-medical p-3 rounded-full w-fit mb-3 shadow-glow">
                     <User className="h-6 w-6 text-white" />
                   </div>
-                  <CardTitle className="text-lg">{doctor.full_name}</CardTitle>
+                  <CardTitle className="text-lg text-foreground">{doctor.full_name}</CardTitle>
                   <CardDescription>
-                    <Badge variant="secondary">{doctor.specialization}</Badge>
+                    <Badge variant="secondary" className="bg-gradient-secondary text-white border-0 shadow-soft">{doctor.specialization}</Badge>
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Clock className="h-4 w-4" />
-                    <span>{doctor.experience_years} years experience</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-green-600">
-                    <Star className="h-4 w-4" />
-                    <span>Match Score: {Math.round(doctor.matchScore * 100)}%</span>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Clock className="h-4 w-4 text-primary" />
+                      <span>{doctor.experience_years}+ years</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Award className="h-4 w-4 text-success" />
+                      <span className="text-success font-medium">{Math.round(doctor.matchScore * 100)}% match</span>
+                    </div>
                   </div>
                   {doctor.matchReason.length > 0 && (
-                   <div className="space-y-1">
+                   <div className="space-y-2">
+                     <div className="flex items-center gap-1 mb-2">
+                       <BookOpen className="h-3 w-3 text-info" />
+                       <span className="text-xs font-medium text-info">Why this doctor matches:</span>
+                     </div>
                        {doctor.matchReason.slice(0, 2).map((reason, idx) => (
-                         <Badge key={idx} variant="outline" className="mr-1 mb-1 text-xs">
+                         <Badge key={idx} variant="outline" className="mr-1 mb-1 text-xs border-primary/30 text-primary bg-primary/5">
                            {reason}
                          </Badge>
                        ))}
                      </div>
                   )}
-                  <p className="text-sm text-muted-foreground line-clamp-2">{doctor.bio}</p>
+                  <div className="bg-soft-gray/50 dark:bg-muted/20 p-3 rounded-lg">
+                    <p className="text-sm text-muted-foreground line-clamp-3">{doctor.bio || "Experienced healthcare professional dedicated to providing quality medical care."}</p>
+                  </div>
                   <Button
                     onClick={() => {
                       setSelectedDoctor(doctor);
                       setShowRequestDialog(true);
                     }}
-                    className="w-full"
-                    variant="default"
+                    className="w-full btn-medical-primary shadow-soft hover:shadow-medium transition-spring"
                   >
                     <Send className="h-4 w-4 mr-2" />
                     Send Request
@@ -295,13 +302,15 @@ const DoctorList = ({ onClose, symptoms: userSymptoms = "", category = "", onBac
             <div>
               <Label>Consultation Type</Label>
               <RadioGroup value={consultationType} onValueChange={setConsultationType}>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-3 p-3 rounded-lg border border-border/50 hover:border-primary/30 transition-colors">
                   <RadioGroupItem value="video" id="video" />
-                  <Label htmlFor="video">Video Call</Label>
+                  <Video className="h-4 w-4 text-primary" />
+                  <Label htmlFor="video" className="cursor-pointer">Video Call</Label>
                 </div>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-3 p-3 rounded-lg border border-border/50 hover:border-primary/30 transition-colors">
                   <RadioGroupItem value="chat" id="chat" />
-                  <Label htmlFor="chat">Chat</Label>
+                  <MessageCircle className="h-4 w-4 text-accent" />
+                  <Label htmlFor="chat" className="cursor-pointer">Chat</Label>
                 </div>
               </RadioGroup>
             </div>
