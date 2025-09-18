@@ -45,22 +45,8 @@ const Header = () => {
             ))}
           </nav>
 
-          {/* Auth Buttons */}
-          <div className="hidden md:flex items-center space-x-4">
-            <Link to="/login/patient">
-              <Button variant="outline" size="sm">
-                Patient Login
-              </Button>
-            </Link>
-            <Link to="/login/doctor">
-              <Button variant="outline" size="sm">
-                Doctor Login
-              </Button>
-            </Link>
-            <Link to="/register/patient">
-              <Button size="sm">Get Started</Button>
-            </Link>
-          </div>
+          {/* Empty space for removed auth buttons */}
+          <div className="hidden md:flex"></div>
 
           {/* Mobile menu button */}
           <div className="md:hidden">
@@ -96,23 +82,6 @@ const Header = () => {
                   {item.name}
                 </Link>
               ))}
-              <div className="pt-4 space-y-2">
-                <Link to="/login/patient" onClick={() => setIsMobileMenuOpen(false)}>
-                  <Button variant="outline" size="sm" className="w-full">
-                    Patient Login
-                  </Button>
-                </Link>
-                <Link to="/login/doctor" onClick={() => setIsMobileMenuOpen(false)}>
-                  <Button variant="outline" size="sm" className="w-full">
-                    Doctor Login
-                  </Button>
-                </Link>
-                <Link to="/register/patient" onClick={() => setIsMobileMenuOpen(false)}>
-                  <Button size="sm" className="w-full">
-                    Get Started
-                  </Button>
-                </Link>
-              </div>
             </div>
           </div>
         )}
