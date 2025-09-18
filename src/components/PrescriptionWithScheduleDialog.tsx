@@ -96,6 +96,22 @@ const PrescriptionWithScheduleDialog = ({
       return;
     }
 
+    // Get selected slot information
+    let selectedSlot = null;
+    if (followUpDate) {
+      const availableSlotsForDate = filteredSlots.length > 0 ? filteredSlots : availableSlots.filter(slot => slot.date === followUpDate);
+      if (availableSlotsForDate.length === 0) {
+        toast({
+          title: "No Available Slots",
+          description: "Please select a different follow-up date or remove the follow-up date.",
+          variant: "destructive",
+        });
+        return;
+      }
+      // Select the first available slot for the selected date
+      selectedSlot = availableSlotsForDate[0];
+    }
+
     setLoading(true);
 
     try {
@@ -111,6 +127,9 @@ const PrescriptionWithScheduleDialog = ({
           notes,
           health_tips: healthTips,
           follow_up_date: followUpDate || null,
+          selected_consultation_date: selectedSlot?.date || null,
+          selected_consultation_time: selectedSlot?.start_time || null,
+          consultation_status: 'pending'
         });
 
       if (prescriptionError) throw prescriptionError;
@@ -120,7 +139,7 @@ const PrescriptionWithScheduleDialog = ({
         .from('consultation_requests')
         .update({
           status: 'completed',
-          doctor_response: `Prescription provided. Available slots for follow-up consultations shown below.`
+          doctor_response: `Prescription provided${selectedSlot ? ` with consultation slot scheduled for ${selectedSlot.date} at ${selectedSlot.start_time}` : '. Available slots for follow-up consultations shown below.'}`
         })
         .eq('id', consultationRequest.id);
 
@@ -128,7 +147,7 @@ const PrescriptionWithScheduleDialog = ({
 
       toast({
         title: "Success",
-        description: "Prescription created successfully with available consultation slots.",
+        description: `Prescription created successfully${selectedSlot ? ` with consultation slot scheduled for ${selectedSlot.date} at ${selectedSlot.start_time}` : ' with available consultation slots'}.`,
       });
 
       // Reset form

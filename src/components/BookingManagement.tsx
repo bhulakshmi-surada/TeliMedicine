@@ -17,9 +17,12 @@ interface BookingRequest {
   status: string;
   created_at: string;
   request_message: string;
+  type?: 'consultation' | 'prescription_confirmed';
+  scheduled_time?: string;
   patient: {
     full_name: string;
     emergency_contact: string;
+    phone?: string;
   };
 }
 
@@ -43,21 +46,76 @@ const BookingManagement = ({ consultationType, doctorId, onClose }: BookingManag
 
   const fetchBookings = async () => {
     try {
-      const { data, error } = await supabase
+      // First fetch regular bookings from consultation_requests
+      const { data: consultationData, error: consultationError } = await supabase
         .from('consultation_requests')
         .select(`
           *,
-          patient:patients(full_name, emergency_contact)
+          patient:patients(full_name, emergency_contact, phone)
         `)
         .eq('doctor_id', doctorId)
         .eq('consultation_type', consultationType)
         .eq('status', 'accepted')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
-      setBookings(data || []);
+      if (consultationError) {
+        console.error('Error fetching consultation bookings:', consultationError);
+      }
+
+      // Then fetch confirmed prescriptions (patients who clicked OK)
+      const { data: prescriptionData, error: prescriptionError } = await supabase
+        .from('prescriptions')
+        .select(`
+          *,
+          consultation_request:consultation_requests!inner(
+            consultation_type,
+            patient:patients(full_name, emergency_contact, phone)
+          )
+        `)
+        .eq('doctor_id', doctorId)
+        .eq('consultation_request.consultation_type', consultationType)
+        .eq('consultation_status', 'confirmed')
+        .order('created_at', { ascending: false });
+
+      if (prescriptionError) {
+        console.error('Error fetching prescription confirmations:', prescriptionError);
+      }
+
+      // Combine and format both types of bookings
+      const allBookings = [];
+      
+      // Add consultation bookings
+      if (consultationData) {
+        allBookings.push(...consultationData.map(booking => ({
+          ...booking,
+          type: 'consultation'
+        })));
+      }
+
+      // Add confirmed prescription bookings
+      if (prescriptionData) {
+        allBookings.push(...prescriptionData.map(prescription => ({
+          id: prescription.id,
+          patient_id: prescription.patient_id,
+          symptoms: `Follow-up consultation from prescription`,
+          consultation_type: prescription.consultation_request.consultation_type,
+          status: 'confirmed',
+          created_at: prescription.created_at,
+          scheduled_time: prescription.selected_consultation_date && prescription.selected_consultation_time 
+            ? `${prescription.selected_consultation_date} ${prescription.selected_consultation_time}`
+            : null,
+          request_message: `Patient confirmed ${consultationType} consultation from prescription`,
+          patient: prescription.consultation_request.patient,
+          type: 'prescription_confirmed'
+        })));
+      }
+
+      // Sort by created_at
+      allBookings.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+      
+      setBookings(allBookings);
     } catch (error) {
-      console.error('Error fetching bookings:', error);
+      console.error('Error in fetchBookings:', error);
       toast({
         title: "Error",
         description: "Failed to fetch bookings",
@@ -169,14 +227,19 @@ const BookingManagement = ({ consultationType, doctorId, onClose }: BookingManag
                     </div>
                   </div>
                   <Badge 
-                    variant={booking.status === 'confirmed' ? 'default' : 'secondary'}
+                    variant={
+                      booking.status === 'confirmed' ? 'default' : 
+                      booking.type === 'prescription_confirmed' ? 'default' : 
+                      'secondary'
+                    }
                     className={
+                      booking.type === 'prescription_confirmed' ? 'bg-green-500 text-white' :
                       booking.status === 'confirmed' ? 'bg-green-500 text-white' : 
                       booking.status === 'rescheduled' ? 'bg-yellow-500 text-white' : 
                       'bg-blue-500 text-white'
                     }
                   >
-                    {booking.status}
+                    {booking.type === 'prescription_confirmed' ? 'Ready from Prescription' : booking.status}
                   </Badge>
                 </div>
               </CardHeader>
@@ -192,10 +255,21 @@ const BookingManagement = ({ consultationType, doctorId, onClose }: BookingManag
                       <span>Time: {new Date(booking.created_at).toLocaleTimeString()}</span>
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <p className="text-sm"><strong>Consultation Type:</strong> {booking.consultation_type}</p>
+                <div className="space-y-2">
+                  <p className="text-sm"><strong>Consultation Type:</strong> {booking.consultation_type}</p>
+                  {booking.type === 'prescription_confirmed' ? (
+                    <div className="bg-green-50 dark:bg-green-950/20 p-2 rounded border border-green-200 dark:border-green-800">
+                      <p className="text-sm text-green-800 dark:text-green-200 font-medium">
+                        ✓ Patient confirmed consultation from prescription
+                      </p>
+                    </div>
+                  ) : (
                     <p className="text-sm"><strong>Symptoms:</strong> {booking.symptoms}</p>
-                  </div>
+                  )}
+                  {booking.scheduled_time && (
+                    <p className="text-sm"><strong>Scheduled:</strong> {new Date(booking.scheduled_time).toLocaleString()}</p>
+                  )}
+                </div>
                 </div>
                 
                 {booking.request_message && (
@@ -205,7 +279,16 @@ const BookingManagement = ({ consultationType, doctorId, onClose }: BookingManag
                   </div>
                 )}
 
-                {booking.status === 'accepted' && (
+                {booking.type === 'prescription_confirmed' ? (
+                  <div className="flex gap-2 pt-4 border-t">
+                    <Button
+                      className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                    >
+                      <ConsultationIcon className="h-4 w-4 mr-2" />
+                      Start {consultationType === 'video' ? 'Video Call' : 'Chat'}
+                    </Button>
+                  </div>
+                ) : booking.status === 'accepted' && (
                   <div className="flex gap-2 pt-4 border-t">
                     <Button
                       onClick={() => handleConfirmation(booking, 'accept')}
