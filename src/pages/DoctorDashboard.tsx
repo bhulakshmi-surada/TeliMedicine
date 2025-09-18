@@ -311,8 +311,8 @@ const DoctorDashboard = () => {
 
   if (showPendingRequests && doctorProfile) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-background to-muted/50 py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen bg-background">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <PendingRequestsView
             onClose={() => setShowPendingRequests(false)}
             doctorId={doctorProfile.id}
@@ -322,13 +322,21 @@ const DoctorDashboard = () => {
     );
   }
 
+  if (showScheduleManager && doctorProfile) {
+    return (
+      <DoctorScheduleManager
+        onClose={() => setShowScheduleManager(false)}
+      />
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-muted/50 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-background">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Welcome Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
-            <div className="bg-gradient-secondary p-2 rounded-full">
+            <div className="bg-primary p-2 rounded-full">
               <Stethoscope className="h-6 w-6 text-white" />
             </div>
             <div>
@@ -340,8 +348,7 @@ const DoctorDashboard = () => {
               </p>
             </div>
           </div>
-          <Button variant="outline" onClick={handleSignOut}>
-            <LogOut className="h-4 w-4 mr-2" />
+          <Button variant="ghost" onClick={handleSignOut} className="text-muted-foreground hover:text-foreground">
             Sign Out
           </Button>
         </div>
@@ -349,14 +356,26 @@ const DoctorDashboard = () => {
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {dashboardStats.map((stat, index) => (
-            <Card key={index} className="shadow-medium">
-              <CardContent className="pt-6">
+            <Card key={index} className="bg-white border-0 shadow-sm">
+              <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-muted-foreground">{stat.title}</p>
-                    <p className="text-2xl font-bold">{stat.value}</p>
+                    <p className="text-sm text-muted-foreground font-medium">{stat.title}</p>
+                    <p className="text-3xl font-bold mt-2">{stat.value}</p>
                   </div>
-                  <stat.icon className={`h-8 w-8 ${stat.color}`} />
+                  <div className={`p-2 rounded-lg ${
+                    index === 0 ? 'bg-orange-100' : 
+                    index === 1 ? 'bg-blue-100' : 
+                    index === 2 ? 'bg-green-100' : 
+                    'bg-purple-100'
+                  }`}>
+                    <stat.icon className={`h-6 w-6 ${
+                      index === 0 ? 'text-orange-600' : 
+                      index === 1 ? 'text-blue-600' : 
+                      index === 2 ? 'text-green-600' : 
+                      'text-purple-600'
+                    }`} />
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -366,18 +385,29 @@ const DoctorDashboard = () => {
         {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {quickActions.map((action, index) => (
-            <Card key={index} className="shadow-medium hover:shadow-strong transition-all duration-300 cursor-pointer">
-              <CardHeader className="text-center pb-4">
-                <div className="mx-auto bg-gradient-primary p-3 rounded-full w-fit mb-3">
-                  <action.icon className="h-5 w-5 text-white" />
+            <Card key={index} className="bg-white border-0 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer" onClick={action.action}>
+              <CardContent className="p-6 text-center">
+                <div className={`mx-auto p-3 rounded-full w-fit mb-4 ${
+                  index === 0 ? 'bg-blue-600' : 
+                  index === 1 ? 'bg-green-600' : 
+                  index === 2 ? 'bg-blue-600' : 
+                  'bg-gray-600'
+                }`}>
+                  <action.icon className="h-6 w-6 text-white" />
                 </div>
-                <CardTitle className="text-sm">{action.title}</CardTitle>
-                <CardDescription className="text-xs">
+                <CardTitle className="text-sm font-medium mb-2">{action.title}</CardTitle>
+                <CardDescription className="text-xs text-muted-foreground mb-4">
                   {action.description}
                 </CardDescription>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <Button variant={action.variant} size="sm" className="w-full" onClick={action.action}>
+                <Button 
+                  variant={index === 0 ? "default" : index === 1 ? "secondary" : "outline"} 
+                  size="sm" 
+                  className={`w-full ${
+                    index === 0 ? 'bg-blue-600 hover:bg-blue-700' : 
+                    index === 1 ? 'bg-green-600 hover:bg-green-700 text-white' : 
+                    ''
+                  }`}
+                >
                   {action.title}
                 </Button>
               </CardContent>
@@ -386,9 +416,9 @@ const DoctorDashboard = () => {
         </div>
 
         {/* Consultation Requests */}
-        <Card className="shadow-medium">
+        <Card className="bg-white border-0 shadow-sm">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-lg">
               <Clock className="h-5 w-5 text-primary" />
               Consultation Requests
             </CardTitle>
@@ -401,73 +431,80 @@ const DoctorDashboard = () => {
               </div>
             ) : (
               consultationRequests.map((request) => (
-                <div key={request.id} className="p-4 bg-muted/50 rounded-lg border">
+                <div key={request.id} className="p-4 bg-gray-50 rounded-lg border-l-4 border-l-gray-300">
                   <div className="flex items-start justify-between mb-3">
                     <div>
-                      <h4 className="font-medium">{request.patient.full_name}</h4>
+                      <h4 className="font-medium text-lg">{request.patient.full_name}</h4>
                       <p className="text-sm text-muted-foreground">
                         Emergency Contact: {request.patient.emergency_contact}
                       </p>
                     </div>
                     <div className="flex gap-2">
-                      <Badge variant={getUrgencyVariant(request.symptoms)}>
+                      <Badge 
+                        variant={getUrgencyVariant(request.symptoms) === 'destructive' ? 'destructive' : 'secondary'}
+                        className={getUrgencyVariant(request.symptoms) === 'destructive' ? 'bg-red-500 text-white' : 'bg-green-500 text-white'}
+                      >
                         {getUrgencyVariant(request.symptoms) === 'destructive' ? 'Urgent' : 'Normal'}
                       </Badge>
-                      <Badge variant={getStatusColor(request.status)}>
+                      <Badge 
+                        variant="secondary"
+                        className={`${
+                          request.status === 'accepted' ? 'bg-blue-500 text-white' : 
+                          request.status === 'completed' ? 'bg-green-500 text-white' :
+                          'bg-gray-500 text-white'
+                        }`}
+                      >
                         {request.status}
                       </Badge>
                     </div>
                   </div>
-                  <div className="space-y-2 mb-3">
+                  <div className="space-y-2 mb-4">
                     <p className="text-sm"><strong>Symptoms:</strong> {request.symptoms}</p>
                     <p className="text-sm"><strong>Type:</strong> {request.consultation_type}</p>
                     {request.request_message && (
                       <p className="text-sm"><strong>Message:</strong> {request.request_message}</p>
                     )}
                     <p className="text-xs text-muted-foreground">
-                      Requested: {new Date(request.created_at).toLocaleString()}
+                      Requested: {new Date(request.created_at).toLocaleDateString()} {new Date(request.created_at).toLocaleTimeString()}
                     </p>
                   </div>
 
-                  <div className="flex gap-2">
-                    {request.status === 'pending' && (
-                      <>
-                        <Button
-                          size="sm"
-                          variant="default"
-                          className="flex-1"
-                          onClick={() => handleAcceptRequest(request)}
-                        >
-                          <CheckCircle className="h-4 w-4 mr-1" />
-                          Accept
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="flex-1"
-                          onClick={() => handleDeclineRequest(request)}
-                        >
-                          <XCircle className="h-4 w-4 mr-1" />
-                          Decline
-                        </Button>
-                      </>
-                    )}
-
-                    {request.status === 'accepted' && (
+                  {request.status === 'accepted' && (
+                    <Button
+                      size="lg"
+                      className="w-full bg-green-500 hover:bg-green-600 text-white"
+                      onClick={() => {
+                        setSelectedRequest(request);
+                        setShowPrescriptionDialog(true);
+                      }}
+                    >
+                      <FileText className="h-4 w-4 mr-2" />
+                      Create Prescription
+                    </Button>
+                  )}
+                  
+                  {request.status === 'pending' && (
+                    <div className="flex gap-2">
                       <Button
                         size="sm"
-                        variant="secondary"
+                        variant="default"
                         className="flex-1"
-                        onClick={() => {
-                          setSelectedRequest(request);
-                          setShowPrescriptionDialog(true);
-                        }}
+                        onClick={() => handleAcceptRequest(request)}
                       >
-                        <FileText className="h-4 w-4 mr-1" />
-                        Create Prescription
+                        <CheckCircle className="h-4 w-4 mr-1" />
+                        Accept
                       </Button>
-                    )}
-                  </div>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="flex-1"
+                        onClick={() => handleDeclineRequest(request)}
+                      >
+                        <XCircle className="h-4 w-4 mr-1" />
+                        Decline
+                      </Button>
+                    </div>
+                  )}
                 </div>
               ))
             )}
@@ -475,13 +512,13 @@ const DoctorDashboard = () => {
         </Card>
 
         {/* Professional Notice */}
-        <Card className="mt-8 border-primary/20 bg-primary/5">
+        <Card className="mt-8 bg-blue-50 border-blue-200">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
-              <Stethoscope className="h-5 w-5 text-primary" />
+              <Stethoscope className="h-5 w-5 text-blue-600" />
               <div>
-                <h4 className="font-medium text-primary">Professional Practice</h4>
-                <p className="text-sm text-muted-foreground">
+                <h4 className="font-medium text-blue-800">Professional Practice</h4>
+                <p className="text-sm text-blue-700">
                   All consultations are recorded for quality assurance and legal compliance.
                   Patient data is protected under HIPAA regulations.
                 </p>
