@@ -244,13 +244,13 @@ const DoctorList = ({ onClose, symptoms: userSymptoms = "", category = "", onBac
                     <span>Match Score: {Math.round(doctor.matchScore * 100)}%</span>
                   </div>
                   {doctor.matchReason.length > 0 && (
-                    <div className="text-xs text-muted-foreground">
-                      {doctor.matchReason.slice(0, 2).map((reason, idx) => (
-                        <Badge key={idx} variant="outline" className="mr-1 mb-1 text-xs">
-                          {reason}
-                        </Badge>
-                      ))}
-                    </div>
+                   <div className="space-y-1">
+                       {doctor.matchReason.slice(0, 2).map((reason, idx) => (
+                         <Badge key={idx} variant="outline" className="mr-1 mb-1 text-xs">
+                           {reason}
+                         </Badge>
+                       ))}
+                     </div>
                   )}
                   <p className="text-sm text-muted-foreground line-clamp-2">{doctor.bio}</p>
                   <Button

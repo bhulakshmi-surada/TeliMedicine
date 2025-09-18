@@ -1,16 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-
-// Mock auth types for basic functionality
-interface User {
-  id: string;
-  email: string;
-  role?: string;
-}
-
-interface Session {
-  user: User;
-  access_token: string;
-}
+import { supabase } from '@/integrations/supabase/client';
+import { User, Session } from '@supabase/supabase-js';
 
 interface AuthContextType {
   user: User | null;
@@ -34,21 +24,45 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+        setLoading(false);
+      }
+    );
+
+    // Check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   const signUp = async (email: string, password: string, userData: any, customRedirectUrl?: string) => {
     try {
       setLoading(true);
-      // Mock signup - in real app this would connect to Supabase
-      const mockUser = { id: '1', email, role: userData.role || 'patient' };
-      const mockSession = { user: mockUser, access_token: 'mock-token' };
+      const redirectUrl = customRedirectUrl || `${window.location.origin}/`;
       
-      setUser(mockUser);
-      setSession(mockSession);
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: redirectUrl,
+          data: userData
+        }
+      });
       
-      return { data: mockSession, error: null };
+      return { data, error };
     } catch (error) {
-      return { data: null, error: error };
+      return { data: null, error };
     } finally {
       setLoading(false);
     }
@@ -57,28 +71,27 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const signIn = async (email: string, password: string) => {
     try {
       setLoading(true);
-      // Mock signin - in real app this would connect to Supabase
-      if (email && password.length >= 6) {
-        const mockUser = { id: '1', email, role: 'patient' };
-        const mockSession = { user: mockUser, access_token: 'mock-token' };
-        
-        setUser(mockUser);
-        setSession(mockSession);
-        
-        return { data: mockSession, error: null };
-      } else {
-        throw new Error('Invalid login credentials');
-      }
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+      
+      return { data, error };
     } catch (error: any) {
-      return { data: null, error: { message: error.message || 'Login failed' } };
+      return { data: null, error };
     } finally {
       setLoading(false);
     }
   };
 
   const signOut = async () => {
-    setUser(null);
-    setSession(null);
+    setLoading(true);
+    const { error } = await supabase.auth.signOut();
+    if (!error) {
+      setUser(null);
+      setSession(null);
+    }
+    setLoading(false);
   };
 
   const value = {

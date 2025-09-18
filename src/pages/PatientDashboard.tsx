@@ -25,6 +25,7 @@ import PrescriptionList from "@/components/PrescriptionList";
 import SymptomsForm from "@/components/SymptomsForm";
 import PatientBookingView from "@/components/PatientBookingView";
 import HealthTips from "@/components/HealthTips";
+import SOSEmergencyDialog from "@/components/SOSEmergencyDialog";
 
 interface PatientProfile {
   full_name: string;
@@ -54,6 +55,7 @@ const PatientDashboard = () => {
   const [symptomCategory, setSymptomCategory] = useState("");
   const [activeView, setActiveView] = useState('dashboard');
   const [showHealthTips, setShowHealthTips] = useState(false);
+  const [showSOSDialog, setShowSOSDialog] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -116,24 +118,23 @@ const PatientDashboard = () => {
   };
 
   const handleEmergencyCall = () => {
-    if (patientProfile?.emergency_contact) {
-      window.location.href = `tel:${patientProfile.emergency_contact}`;
-    } else {
-      toast({
-        title: "Emergency Contact Not Set",
-        description: "Please update your profile with an emergency contact number.",
-        variant: "destructive",
-      });
-    }
+    setShowSOSDialog(true);
   };
 
   const handleSignOut = async () => {
-    await signOut();
-    toast({
-      title: "Signed Out",
-      description: "You have been signed out successfully.",
-    });
-    window.location.href = '/';
+    try {
+      await signOut();
+      toast({
+        title: "Signed Out",
+        description: "You have been signed out successfully.",
+      });
+      // Navigate to home page
+      window.location.href = '/';
+    } catch (error) {
+      console.error('Sign out error:', error);
+      // Force navigation even if sign out fails
+      window.location.href = '/';
+    }
   };
 
   const handleSymptomsSubmit = (symptoms: string, category: string) => {
@@ -423,6 +424,13 @@ const PatientDashboard = () => {
           />
         </DialogContent>
       </Dialog>
+
+      {/* SOS Emergency Dialog */}
+      <SOSEmergencyDialog
+        open={showSOSDialog}
+        onOpenChange={setShowSOSDialog}
+        emergencyContact={patientProfile?.emergency_contact}
+      />
     </div>
   );
 };

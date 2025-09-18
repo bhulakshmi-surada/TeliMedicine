@@ -5,7 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { CheckCircle, XCircle, Clock, User, MessageSquare } from "lucide-react";
+import { CheckCircle, XCircle, Clock, User, MessageSquare, FileText } from "lucide-react";
+import PrescriptionWithScheduleDialog from "@/components/PrescriptionWithScheduleDialog";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
@@ -35,6 +36,8 @@ const PendingRequestsView = ({ onClose, doctorId }: PendingRequestsViewProps) =>
   const [showResponseDialog, setShowResponseDialog] = useState(false);
   const [responseMessage, setResponseMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPrescriptionDialog, setShowPrescriptionDialog] = useState(false);
+  const [selectedForPrescription, setSelectedForPrescription] = useState<ConsultationRequest | null>(null);
 
   useEffect(() => {
     fetchPendingRequests();
@@ -215,6 +218,21 @@ const PendingRequestsView = ({ onClose, doctorId }: PendingRequestsViewProps) =>
                     </Button>
                   </div>
                 )}
+
+                {request.status === 'accepted' && (
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    className="w-full"
+                    onClick={() => {
+                      setSelectedForPrescription(request);
+                      setShowPrescriptionDialog(true);
+                    }}
+                  >
+                    <FileText className="h-4 w-4 mr-1" />
+                    Create Prescription & Share Schedule
+                  </Button>
+                )}
               </div>
             ))
           )}
@@ -257,6 +275,18 @@ const PendingRequestsView = ({ onClose, doctorId }: PendingRequestsViewProps) =>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Prescription with Schedule Dialog */}
+      <PrescriptionWithScheduleDialog
+        open={showPrescriptionDialog}
+        onOpenChange={setShowPrescriptionDialog}
+        consultationRequest={selectedForPrescription}
+        doctorId={doctorId}
+        onComplete={() => {
+          fetchPendingRequests();
+          setSelectedForPrescription(null);
+        }}
+      />
     </div>
   );
 };

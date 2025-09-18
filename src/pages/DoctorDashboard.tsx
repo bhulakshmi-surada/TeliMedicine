@@ -225,12 +225,19 @@ const DoctorDashboard = () => {
   };
 
   const handleSignOut = async () => {
-    await signOut();
-    toast({
-      title: "Signed Out",
-      description: "You have been signed out successfully.",
-    });
-    window.location.href = '/';
+    try {
+      await signOut();
+      toast({
+        title: "Signed Out",
+        description: "You have been signed out successfully.",
+      });
+      // Navigate to home page
+      window.location.href = '/';
+    } catch (error) {
+      console.error('Sign out error:', error);
+      // Force navigation even if sign out fails
+      window.location.href = '/';
+    }
   };
 
   const dashboardStats = [
