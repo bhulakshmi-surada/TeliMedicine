@@ -430,7 +430,7 @@ const DoctorDashboard = () => {
                   index === 0 ? 'bg-blue-600' : 
                   index === 1 ? 'bg-green-600' : 
                   index === 2 ? 'bg-blue-600' : 
-                  'bg-gray-600'
+                  'bg-green-600'
                 }`}>
                   <action.icon className="h-6 w-6 text-white" />
                 </div>

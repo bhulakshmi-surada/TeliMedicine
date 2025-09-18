@@ -284,6 +284,7 @@ export type Database = {
       prescriptions: {
         Row: {
           consultation_request_id: string
+          consultation_status: string | null
           created_at: string
           doctor_id: string
           dosage_instructions: string
@@ -293,9 +294,12 @@ export type Database = {
           medications: string
           notes: string | null
           patient_id: string
+          selected_consultation_date: string | null
+          selected_consultation_time: string | null
         }
         Insert: {
           consultation_request_id: string
+          consultation_status?: string | null
           created_at?: string
           doctor_id: string
           dosage_instructions: string
@@ -305,9 +309,12 @@ export type Database = {
           medications: string
           notes?: string | null
           patient_id: string
+          selected_consultation_date?: string | null
+          selected_consultation_time?: string | null
         }
         Update: {
           consultation_request_id?: string
+          consultation_status?: string | null
           created_at?: string
           doctor_id?: string
           dosage_instructions?: string
@@ -317,6 +324,8 @@ export type Database = {
           medications?: string
           notes?: string | null
           patient_id?: string
+          selected_consultation_date?: string | null
+          selected_consultation_time?: string | null
         }
         Relationships: [
           {
