@@ -5,8 +5,11 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Heart, ArrowLeft, Eye, EyeOff } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
 const PatientRegister = () => {
   const [formData, setFormData] = useState({
@@ -25,6 +28,89 @@ const PatientRegister = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const { signUp } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!formData.firstName || !formData.lastName || !formData.email || !formData.password || !formData.emergencyContact) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      toast({
+        title: "Password Mismatch",
+        description: "Passwords do not match",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!formData.agreeToTerms || !formData.agreeToPrivacy) {
+      toast({
+        title: "Agreement Required",
+        description: "Please agree to the terms and privacy policy",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const fullName = `${formData.firstName} ${formData.lastName}`;
+      
+      // Sign up the user
+      const { data: authData, error: authError } = await signUp(
+        formData.email,
+        formData.password,
+        {
+          full_name: fullName,
+          user_type: 'patient'
+        }
+      );
+
+      if (authError) throw authError;
+
+      if (authData.user) {
+        // Create patient profile
+        const { error: patientError } = await supabase
+          .from('patients')
+          .insert({
+            user_id: authData.user.id,
+            full_name: fullName,
+            email: formData.email,
+            phone: formData.phone || null,
+            date_of_birth: formData.dateOfBirth || null,
+            gender: formData.gender || null,
+            emergency_contact: `${formData.emergencyContact} - ${formData.emergencyPhone}`
+          });
+
+        if (patientError) throw patientError;
+
+        toast({
+          title: "Registration Successful",
+          description: "Please check your email to verify your account, then you can login.",
+        });
+
+        navigate('/login/patient');
+      }
+    } catch (error: any) {
+      toast({
+        title: "Registration Failed",
+        description: error.message || "Failed to register. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-muted/50 py-12">
@@ -49,7 +135,7 @@ const PatientRegister = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-6">
               {/* Personal Information */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -59,6 +145,7 @@ const PatientRegister = () => {
                     value={formData.firstName}
                     onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                     placeholder="Enter your first name"
+                    disabled={loading}
                     required
                   />
                 </div>
@@ -246,8 +333,8 @@ const PatientRegister = () => {
                 </div>
               </div>
 
-              <Button type="submit" className="w-full">
-                Create Patient Account
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? 'Creating Account...' : 'Create Patient Account'}
               </Button>
             </form>
 

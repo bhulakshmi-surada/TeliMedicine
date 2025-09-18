@@ -15,7 +15,7 @@ import {
   XCircle,
   Clock,
   FileText,
-  Settings,
+  MessageCircle,
   User,
   Phone,
   LogOut,
@@ -26,6 +26,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import PendingRequestsView from "@/components/PendingRequestsView";
 import DoctorScheduleManager from "@/components/DoctorScheduleManager";
+import BookingManagement from "@/components/BookingManagement";
 
 interface DoctorProfile {
   id: string;
@@ -56,6 +57,8 @@ const DoctorDashboard = () => {
   const [showResponseDialog, setShowResponseDialog] = useState(false);
   const [showPendingRequests, setShowPendingRequests] = useState(false);
   const [showScheduleManager, setShowScheduleManager] = useState(false);
+  const [showChatBookings, setShowChatBookings] = useState(false);
+  const [showVideoBookings, setShowVideoBookings] = useState(false);
   const [prescriptionData, setPrescriptionData] = useState({
     medications: '',
     dosageInstructions: '',
@@ -286,16 +289,16 @@ const DoctorDashboard = () => {
     {
       icon: Video,
       title: "Start Video Call",
-      description: "Begin consultation with patient",
+      description: "Manage video consultation bookings",
       variant: "outline" as const,
-      action: () => {}
+      action: () => setShowVideoBookings(true)
     },
     {
-      icon: Settings,
-      title: "Consultation Settings",
-      description: "Configure your practice preferences",
+      icon: MessageCircle,
+      title: "Start a Chat",
+      description: "Manage chat consultation bookings",
       variant: "outline" as const,
-      action: () => {}
+      action: () => setShowChatBookings(true)
     }
   ];
 
@@ -335,6 +338,34 @@ const DoctorDashboard = () => {
       <DoctorScheduleManager
         onClose={() => setShowScheduleManager(false)}
       />
+    );
+  }
+
+  if (showChatBookings && doctorProfile) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <BookingManagement
+            consultationType="chat"
+            doctorId={doctorProfile.id}
+            onClose={() => setShowChatBookings(false)}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  if (showVideoBookings && doctorProfile) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <BookingManagement
+            consultationType="video"
+            doctorId={doctorProfile.id}
+            onClose={() => setShowVideoBookings(false)}
+          />
+        </div>
+      </div>
     );
   }
 

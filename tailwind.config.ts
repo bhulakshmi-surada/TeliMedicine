@@ -48,12 +48,13 @@ export default {
           foreground: "hsl(var(--card-foreground))",
         },
         medical: {
-          blue: "hsl(var(--medical-blue))",
-          green: "hsl(var(--medical-green))",
-          orange: "hsl(var(--medical-orange))",
+          primary: "hsl(var(--medical-primary))",
+          secondary: "hsl(var(--medical-secondary))",
+          accent: "hsl(var(--medical-accent))",
         },
         trust: {
-          blue: "hsl(var(--trust-blue))",
+          primary: "hsl(var(--trust-primary))",
+          secondary: "hsl(var(--trust-secondary))",
         },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
@@ -75,11 +76,15 @@ export default {
         'gradient-primary': 'var(--gradient-primary)',
         'gradient-secondary': 'var(--gradient-secondary)',
         'gradient-hero': 'var(--gradient-hero)',
+        'gradient-accent': 'var(--gradient-accent)',
+        'gradient-success': 'var(--gradient-success)',
       },
       boxShadow: {
         'soft': 'var(--shadow-soft)',
         'medium': 'var(--shadow-medium)',
         'strong': 'var(--shadow-strong)',
+        'elegant': 'var(--shadow-elegant)',
+        'glow': 'var(--shadow-glow)',
       },
       keyframes: {
         "accordion-down": {

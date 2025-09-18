@@ -19,6 +19,7 @@ All colors MUST be HSL.
 
     --primary: 200 98% 39%;
     --primary-foreground: 0 0% 100%;
+    --primary-glow: 200 98% 50%;
 
     --secondary: 160 60% 45%;
     --secondary-foreground: 0 0% 100%;
@@ -36,39 +37,47 @@ All colors MUST be HSL.
     --input: 214.3 31.8% 91.4%;
     --ring: 200 98% 39%;
 
-    /* Medical theme colors */
-    --medical-blue: 200 98% 39%;
-    --medical-green: 160 60% 45%;
-    --medical-orange: 35 100% 50%;
-    --trust-blue: 220 100% 30%;
+    /* Enhanced Medical theme colors */
+    --medical-primary: 200 98% 39%;
+    --medical-secondary: 160 60% 45%;
+    --medical-accent: 35 100% 50%;
+    --trust-primary: 220 100% 30%;
+    --trust-secondary: 240 95% 35%;
     --soft-gray: 210 15% 95%;
+    --success: 142 76% 36%;
+    --warning: 38 92% 50%;
+    --info: 200 98% 39%;
 
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(var(--medical-blue)), hsl(var(--trust-blue)));
-    --gradient-secondary: linear-gradient(135deg, hsl(var(--medical-green)), hsl(var(--medical-blue)));
-    --gradient-hero: linear-gradient(135deg, hsl(var(--medical-blue) / 0.9), hsl(var(--trust-blue) / 0.9));
+    /* Enhanced Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--medical-primary)), hsl(var(--trust-primary)));
+    --gradient-secondary: linear-gradient(135deg, hsl(var(--medical-secondary)), hsl(var(--medical-primary)));
+    --gradient-hero: linear-gradient(135deg, hsl(var(--medical-primary) / 0.95), hsl(var(--trust-primary) / 0.95));
+    --gradient-accent: linear-gradient(135deg, hsl(var(--medical-accent)), hsl(var(--medical-primary)));
+    --gradient-success: linear-gradient(135deg, hsl(var(--success)), hsl(var(--medical-secondary)));
+    --gradient-card: linear-gradient(135deg, hsl(0 0% 100%), hsl(210 40% 99%));
+    --gradient-subtle: linear-gradient(180deg, hsl(210 40% 98%), hsl(210 40% 96%));
 
-    /* Shadows */
-    --shadow-soft: 0 2px 10px hsl(var(--medical-blue) / 0.1);
-    --shadow-medium: 0 8px 30px hsl(var(--medical-blue) / 0.15);
-    --shadow-strong: 0 20px 50px hsl(var(--medical-blue) / 0.2);
+    /* Enhanced Shadows */
+    --shadow-soft: 0 1px 3px hsl(var(--medical-primary) / 0.1);
+    --shadow-medium: 0 4px 12px hsl(var(--medical-primary) / 0.15);
+    --shadow-strong: 0 10px 25px hsl(var(--medical-primary) / 0.2);
+    --shadow-elegant: 0 8px 30px -6px hsl(var(--medical-primary) / 0.3);
+    --shadow-glow: 0 0 20px hsl(var(--primary-glow) / 0.4);
 
-    --radius: 0.5rem;
+    /* Animation & Transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-fast: all 0.15s ease-out;
+    --transition-slow: all 0.5s ease-out;
+
+    --radius: 0.75rem;
 
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
@@ -84,6 +93,7 @@ All colors MUST be HSL.
 
     --primary: 200 98% 45%;
     --primary-foreground: 222.2 47.4% 11.2%;
+    --primary-glow: 200 98% 55%;
 
     --secondary: 160 60% 50%;
     --secondary-foreground: 222.2 84% 4.9%;
@@ -101,20 +111,31 @@ All colors MUST be HSL.
     --input: 217.2 32.6% 17.5%;
     --ring: 200 98% 45%;
 
-    /* Dark mode medical colors */
-    --medical-blue: 200 98% 45%;
-    --medical-green: 160 60% 50%;
-    --medical-orange: 35 100% 55%;
-    --trust-blue: 220 100% 40%;
+    /* Dark mode enhanced medical colors */
+    --medical-primary: 200 98% 45%;
+    --medical-secondary: 160 60% 50%;
+    --medical-accent: 35 100% 55%;
+    --trust-primary: 220 100% 40%;
+    --trust-secondary: 240 95% 40%;
     --soft-gray: 217.2 32.6% 20%;
+    --success: 142 76% 40%;
+    --warning: 38 92% 55%;
+    --info: 200 98% 45%;
 
-    --gradient-primary: linear-gradient(135deg, hsl(var(--medical-blue)), hsl(var(--trust-blue)));
-    --gradient-secondary: linear-gradient(135deg, hsl(var(--medical-green)), hsl(var(--medical-blue)));
-    --gradient-hero: linear-gradient(135deg, hsl(var(--medical-blue) / 0.9), hsl(var(--trust-blue) / 0.9));
+    --gradient-primary: linear-gradient(135deg, hsl(var(--medical-primary)), hsl(var(--trust-primary)));
+    --gradient-secondary: linear-gradient(135deg, hsl(var(--medical-secondary)), hsl(var(--medical-primary)));
+    --gradient-hero: linear-gradient(135deg, hsl(var(--medical-primary) / 0.9), hsl(var(--trust-primary) / 0.9));
+    --gradient-accent: linear-gradient(135deg, hsl(var(--medical-accent)), hsl(var(--medical-primary)));
+    --gradient-success: linear-gradient(135deg, hsl(var(--success)), hsl(var(--medical-secondary)));
+    --gradient-card: linear-gradient(135deg, hsl(217.2 32.6% 17.5%), hsl(217.2 32.6% 19%));
+    --gradient-subtle: linear-gradient(180deg, hsl(222.2 84% 4.9%), hsl(217.2 32.6% 17.5%));
 
-    --shadow-soft: 0 2px 10px hsl(0 0% 0% / 0.3);
-    --shadow-medium: 0 8px 30px hsl(0 0% 0% / 0.4);
-    --shadow-strong: 0 20px 50px hsl(0 0% 0% / 0.5);
+    --shadow-soft: 0 1px 3px hsl(0 0% 0% / 0.3);
+    --shadow-medium: 0 4px 12px hsl(0 0% 0% / 0.4);
+    --shadow-strong: 0 10px 25px hsl(0 0% 0% / 0.5);
+    --shadow-elegant: 0 8px 30px -6px hsl(0 0% 0% / 0.6);
+    --shadow-glow: 0 0 20px hsl(var(--primary-glow) / 0.4);
+
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -133,5 +154,122 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Enhanced component styles */
+  .bg-gradient-primary {
+    background: var(--gradient-primary);
+  }
+
+  .bg-gradient-secondary {
+    background: var(--gradient-secondary);
+  }
+
+  .bg-gradient-hero {
+    background: var(--gradient-hero);
+  }
+
+  .bg-gradient-accent {
+    background: var(--gradient-accent);
+  }
+
+  .bg-gradient-success {
+    background: var(--gradient-success);
+  }
+
+  .shadow-soft {
+    box-shadow: var(--shadow-soft);
+  }
+
+  .shadow-medium {
+    box-shadow: var(--shadow-medium);
+  }
+
+  .shadow-strong {
+    box-shadow: var(--shadow-strong);
+  }
+
+  .shadow-elegant {
+    box-shadow: var(--shadow-elegant);
+  }
+
+  .shadow-glow {
+    box-shadow: var(--shadow-glow);
+  }
+
+  .transition-smooth {
+    transition: var(--transition-smooth);
+  }
+
+  .transition-fast {
+    transition: var(--transition-fast);
+  }
+
+  .transition-slow {
+    transition: var(--transition-slow);
+  }
+
+  /* Glass morphism effects */
+  .glass-effect {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .dark .glass-effect {
+    background: rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  /* Animated backgrounds */
+  .animate-gradient {
+    background-size: 400% 400%;
+    animation: gradient 15s ease infinite;
+  }
+
+  @keyframes gradient {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  /* Pulse animations */
+  .pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite alternate;
+  }
+
+  @keyframes pulse-glow {
+    from {
+      box-shadow: 0 0 20px hsl(var(--primary) / 0.3);
+    }
+    to {
+      box-shadow: 0 0 30px hsl(var(--primary) / 0.6);
+    }
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--muted));
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--primary) / 0.5);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--primary) / 0.8);
   }
 }

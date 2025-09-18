@@ -48,6 +48,7 @@ const PrescriptionWithScheduleDialog = ({
   const [healthTips, setHealthTips] = useState('');
   const [followUpDate, setFollowUpDate] = useState('');
   const [availableSlots, setAvailableSlots] = useState<ScheduleSlot[]>([]);
+  const [filteredSlots, setFilteredSlots] = useState<ScheduleSlot[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -55,6 +56,16 @@ const PrescriptionWithScheduleDialog = ({
       fetchAvailableSlots();
     }
   }, [open, doctorId]);
+
+  useEffect(() => {
+    // Filter slots based on follow-up date selection
+    if (followUpDate) {
+      const filtered = availableSlots.filter(slot => slot.date === followUpDate);
+      setFilteredSlots(filtered);
+    } else {
+      setFilteredSlots(availableSlots);
+    }
+  }, [followUpDate, availableSlots]);
 
   const fetchAvailableSlots = async () => {
     try {
@@ -214,6 +225,9 @@ const PrescriptionWithScheduleDialog = ({
                   onChange={(e) => setFollowUpDate(e.target.value)}
                   min={new Date().toISOString().split('T')[0]}
                 />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Select a date to filter available time slots below
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -230,31 +244,46 @@ const PrescriptionWithScheduleDialog = ({
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {availableSlots.length === 0 ? (
+              {followUpDate && filteredSlots.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <p>No available slots for {new Date(followUpDate).toLocaleDateString()}</p>
+                  <p className="text-sm">Try selecting a different date or add slots in your schedule manager</p>
+                </div>
+              ) : filteredSlots.length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">
                   <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
                   <p>No available slots found</p>
                   <p className="text-sm">Add slots in your schedule manager</p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {availableSlots.map((slot) => (
-                    <div key={slot.id} className="p-3 bg-muted/50 rounded-lg border">
-                      <div className="flex items-center gap-2 mb-1">
-                        <Calendar className="h-4 w-4 text-primary" />
-                        <span className="font-medium">
-                          {new Date(slot.date).toLocaleDateString()}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Clock className="h-3 w-3" />
-                        <span>{slot.start_time} - {slot.end_time}</span>
-                      </div>
-                      <Badge variant="secondary" className="mt-1 text-xs">
-                        Available
-                      </Badge>
+                <div>
+                  {followUpDate && (
+                    <div className="mb-4 p-3 bg-primary/10 rounded-lg border border-primary/20">
+                      <p className="text-sm font-medium text-primary">
+                        Showing slots for {new Date(followUpDate).toLocaleDateString()}
+                      </p>
                     </div>
-                  ))}
+                  )}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {filteredSlots.map((slot) => (
+                      <div key={slot.id} className="p-3 bg-muted/50 rounded-lg border hover:bg-muted/70 transition-colors">
+                        <div className="flex items-center gap-2 mb-1">
+                          <Calendar className="h-4 w-4 text-primary" />
+                          <span className="font-medium">
+                            {new Date(slot.date).toLocaleDateString()}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <Clock className="h-3 w-3" />
+                          <span>{slot.start_time} - {slot.end_time}</span>
+                        </div>
+                        <Badge variant="secondary" className="mt-1 text-xs bg-green-100 text-green-700">
+                          Available
+                        </Badge>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
             </CardContent>
