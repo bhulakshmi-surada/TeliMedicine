@@ -282,7 +282,7 @@ const DoctorDashboard = () => {
     },
     {
       icon: Calendar,
-      title: "Health Tips",
+      title: "Manage Schedule",
       description: "View health resources",
       variant: "secondary" as const,
       action: () => setShowScheduleManager(true),
@@ -511,14 +511,14 @@ const DoctorDashboard = () => {
                   {request.status === 'accepted' && (
                     <Button
                       size="lg"
-                      className="w-full bg-green-500 hover:bg-green-600 text-white"
+                      className="w-full btn-medical-secondary bg-green-500 hover:bg-green-600 text-white"
                       onClick={() => {
                         setSelectedRequest(request);
                         setShowPrescriptionDialog(true);
                       }}
                     >
                       <FileText className="h-4 w-4 mr-2" />
-                      Create Prescription
+                      Create Prescription & Share Schedule
                     </Button>
                   )}
                   

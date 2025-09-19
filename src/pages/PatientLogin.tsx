@@ -122,20 +122,15 @@ const PatientLogin = () => {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="rememberMe"
-                    checked={formData.rememberMe}
-                    onCheckedChange={(checked) => setFormData({ ...formData, rememberMe: !!checked })}
-                  />
-                  <Label htmlFor="rememberMe" className="text-sm">
-                    Remember me
-                  </Label>
-                </div>
-                <Link to="/forgot-password" className="text-sm text-primary hover:underline">
-                  Forgot password?
-                </Link>
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="rememberMe"
+                  checked={formData.rememberMe}
+                  onCheckedChange={(checked) => setFormData({ ...formData, rememberMe: !!checked })}
+                />
+                <Label htmlFor="rememberMe" className="text-sm">
+                  Remember me
+                </Label>
               </div>
 
               <Button type="submit" className="w-full" disabled={loading}>
