@@ -120,6 +120,13 @@ const DoctorLogin = () => {
                   </Button>
                 </div>
               </div>
+              <div className="flex items-center justify-between mb-4">
+                <div></div>
+                <Link to="/forgot-password" className="text-sm text-primary hover:underline">
+                  Forgot password?
+                </Link>
+              </div>
+
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? 'Signing In...' : 'Sign In to Doctor Portal'}
               </Button>
