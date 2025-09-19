@@ -183,7 +183,7 @@ const PatientDashboard = () => {
     },
     {
       icon: BookOpen,
-      title: "Manage Schedule",
+      title: "Health Tips",
       description: "Access health resources and wellness guides",
       action: () => setShowHealthTips(true),
       variant: "outline" as const,
@@ -213,7 +213,7 @@ const PatientDashboard = () => {
               >
                 ← Back to Dashboard
               </Button>
-              <h1 className="text-3xl font-bold text-foreground">Manage Schedule</h1>
+              <h1 className="text-3xl font-bold text-foreground">Health Tips</h1>
             </div>
             <Button variant="outline" onClick={handleSignOut}>
               <LogOut className="h-4 w-4 mr-2" />
@@ -355,7 +355,7 @@ const PatientDashboard = () => {
             <CardHeader>
               <div className="flex items-center gap-2">
                 <Heart className="h-5 w-5 text-primary" />
-                <CardTitle>Manage Schedule</CardTitle>
+                <CardTitle>Health Tips</CardTitle>
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
