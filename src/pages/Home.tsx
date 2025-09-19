@@ -77,6 +77,7 @@ const Home = () => {
       ],
       buttonText: "Doctor Portal",
       buttonVariant: "secondary" as const,
+      customClass: "btn-medical-secondary",
       href: "/login/doctor"
     },
     {
@@ -92,6 +93,7 @@ const Home = () => {
       ],
       buttonText: "Staff Portal",
       buttonVariant: "outline" as const,
+      customClass: "btn-medical-secondary",
       href: "/login/support"
     }
   ];
@@ -160,7 +162,7 @@ const Home = () => {
                       </li>
                     ))}
                   </ul>
-                  <Button variant={type.buttonVariant} className="w-full" asChild>
+                  <Button variant={type.buttonVariant} className={`w-full ${type.customClass || ''}`} asChild>
                     <Link to={type.href}>{type.buttonText}</Link>
                   </Button>
                 </CardContent>
@@ -186,7 +188,7 @@ const Home = () => {
             {features.map((feature, index) => (
               <Card key={index} className="text-center shadow-soft hover:shadow-medium transition-all duration-300">
                 <CardContent className="pt-6">
-                  <div className="mx-auto bg-gradient-secondary p-3 rounded-full w-fit mb-4">
+                  <div className="mx-auto bg-gradient-primary p-3 rounded-full w-fit mb-4">
                     <feature.icon className="h-6 w-6 text-white" />
                   </div>
                   <h3 className="text-lg font-semibold mb-2">{feature.title}</h3>
